@@ -1,0 +1,7 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "matrix_mul.h": "c",
+        "matrix.h": "c"
+    }
+}
