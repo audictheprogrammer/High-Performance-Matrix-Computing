@@ -19,4 +19,4 @@ main_debug: main_debug.c matrix.o matrix_mul.o
 
 clean:
 	rm *.o
-	rm -rf main_test main_flint main
+	rm -rf main_test main_flint main main_debug
