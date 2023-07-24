@@ -102,7 +102,7 @@ u_int64_t** mul_block(u_int64_t** A, u_int64_t** B, int size, u_int32_t p){
 
 
     // int q = size / b;
-    
+
     // for (int i = 0; i <= q; i++){
     //     for (int j = 0; j <= q; j++){
     //         for (int k = 0; k <= q; k++){
@@ -165,12 +165,12 @@ u_int64_t** mul_decomp(u_int64_t** A, u_int64_t** B, int size, u_int32_t p){
 
                 // A * B < p^2 < 2^62
                 // h_k = h_k-1 + A*B < k * 2^30: if k = 1024 = 2^10
-                // h = Sum h_k < n * 2^30 
+                // h = Sum h_k < n * 2^30
 
                 // We need h < 2^30 because of (h * 2^32 + l)
 
                 // l_k = temp - (h_k * 2^32) < 2^32
-                // l = Sum l_k < n * 2^32 
+                // l = Sum l_k < n * 2^32
             }
             u_int64_t n = 1;
             C[i][j] = ((h % p) * (n << 32) + l) % p;
@@ -228,7 +228,9 @@ u_int64_t** mul_decomp_barrett(u_int64_t** A, u_int64_t** B, int size, u_int32_t
                 l += temp - ((temp >> 32) << 32);
             }
             u_int64_t n = 1;
-            C[i][j] = reduction(reduction(h, p) * (n << 32) + l, p);
+            u_int64_t h_reduced = reduction(h, p);
+            u_int64_t l_reduced = reduction(l, p);
+            C[i][j] = reduction(h_reduced * (n << 32) + l_reduced, p);
         }
     }
 
@@ -240,7 +242,7 @@ u_int64_t** mul_decomp_barrett_block_trans(u_int64_t** A, u_int64_t** B, int siz
     /* Does the matrix multiplication using multiple implementation: Decomp Barrett Block and Trans */
     u_int64_t** C = create_matrix(size);
     u_int64_t** T = transpose_matrix(B, size);
-    
+
     int b = 104;
 
     for (int i = 0; i < size; i += b){
@@ -257,7 +259,9 @@ u_int64_t** mul_decomp_barrett_block_trans(u_int64_t** A, u_int64_t** B, int siz
                             l += temp - ((temp >> 32) << 32);
                         }
                         u_int64_t n = 1;
-                        C[ii][jj] = reduction((C[ii][jj] + reduction(h, p) * (n << 32) + l), p);
+                        u_int64_t h_reduced = reduction(h, p);
+                        u_int64_t l_reduced = reduction(l, p);
+                        C[ii][jj] = reduction((C[ii][jj] + h_reduced * (n << 32) + l_reduced), p);
                     }
                 }
 
@@ -283,12 +287,11 @@ u_int64_t** mul_decomp_barrett_trans(u_int64_t** A, u_int64_t** B, int size, u_i
                 l += temp - ((temp >> 32) << 32);
             }
             u_int64_t n = 1;
-            C[i][j] = reduction(reduction(h, p) * (n << 32) + l, p);
+            u_int64_t h_reduced = reduction(h, p);
+            u_int64_t l_reduced = reduction(l, p);
+            C[i][j] = reduction(h_reduced * (n << 32) + l_reduced, p);
         }
     }
 
     return C;
 }
-
-
-
